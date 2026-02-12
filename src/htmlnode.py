@@ -59,7 +59,7 @@ class LeafNode(HTMLNode):
     def to_html(self):
         output_str = ""
         if self.value is None:
-            raise Exception(ValueError)
+            raise ValueError("value missing")
         if self.tag is None:
             return self.value
         if self.props is None:
@@ -76,3 +76,31 @@ class LeafNode(HTMLNode):
             for k, v in self.props.items():
                 output_str = output_str + f"\n - {k}, {v}"
         return output_str
+
+@final
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str | None,
+        children: list[Self] | None,
+        props: dict[str, str] | None = None
+        ):
+        super().__init__(tag, None, children, props)
+
+    @override
+    def to_html(self):
+        output_str = ""
+        if self.tag is None:
+            raise ValueError("tag missing")
+        if self.children is None:
+            raise ValueError("children missing")
+        if self.props is None:
+            output_str = f"<{self.tag}>"
+        if self.props is not None:
+            output_str = f"<{self.tag}{self.props_to_html()}>"
+        for item in self.children:
+            output_str = output_str + item.to_html()
+        output_str = output_str + f"</{self.tag}>"
+
+        return output_str
+
