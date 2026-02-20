@@ -110,4 +110,7 @@ def text_to_text_nodes(text):
 
     return output_nodes
 
+def markdown_to_blocks(text: str):
+    return list(map(str.strip, text.split('\n\n')))
+
 
