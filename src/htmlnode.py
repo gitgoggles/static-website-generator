@@ -19,9 +19,9 @@ class HTMLNode:
         if self.tag is None:
             return self.value
         if self.props is None:
-            output_str = f"<{self.tag}>{self.value}<{self.tag}/>"
+            output_str = f"<{self.tag}>{self.value}</{self.tag}>"
         if self.props is  not None:
-            output_str = f"<{self.tag}{self.props_to_html()}>{self.value}<{self.tag}/>"
+            output_str = f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
         return output_str
 
     def props_to_html(self):
