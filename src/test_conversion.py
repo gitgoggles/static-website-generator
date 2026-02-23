@@ -1,4 +1,5 @@
 from textnode import *
+from blocktype import BlockType
 import unittest
 from htmlnode import *
 from conversion import *
@@ -120,6 +121,83 @@ This is the same paragraph on a new line
                 "- This is a list\n- with items",
             ],
         )
+
+    def test_block_to_heading_block_type(self):
+        heading1 = "# I am a heading block"
+        self.assertEqual(block_to_block_type(heading1), BlockType.HEADING)
+
+        heading2 = "###### I am a heading block"
+        self.assertEqual(block_to_block_type(heading2), BlockType.HEADING)
+
+        heading3 = "####### I am not a heading block"
+        self.assertEqual(block_to_block_type(heading3), BlockType.PARAGRAPH)
+
+    def test_block_to_code_block_type(self):
+        code1 = "```\nI am a code block\n```"
+        self.assertEqual(block_to_block_type(code1), BlockType.CODE)
+
+        code2 = "```\nI am a\n code \nblock\n```"
+        self.assertEqual(block_to_block_type(code2), BlockType.CODE)
+
+        code3 = "```\nI am not a code block"
+        self.assertEqual(block_to_block_type(code3), BlockType.PARAGRAPH)
+
+    def test_block_to_quote_block_type(self):
+        quote1 = "> I am a quote block"
+        self.assertEqual(block_to_block_type(quote1), BlockType.QUOTE)
+
+        quote2 = ">I am not a quote block"
+        self.assertEqual(block_to_block_type(quote2), BlockType.PARAGRAPH)
+
+        quote3 = ">> I am not a quote block"
+        self.assertEqual(block_to_block_type(quote3), BlockType.PARAGRAPH)
+    
+    def test_block_to_unordered_list_block_type(self):
+        unordered_list1 = "- I am a unordered_list block"
+        self.assertEqual(block_to_block_type(unordered_list1), BlockType.UNORDERED_LIST)
+
+        unordered_list2 = "-- I am not a unordered_list block"
+        self.assertEqual(block_to_block_type(unordered_list2), BlockType.PARAGRAPH)
+
+    def test_block_to_ordered_list_block_type(self):
+        ordered_list1 = "1. I am a ordered_list block"
+        self.assertEqual(block_to_block_type(ordered_list1), BlockType.ORDERED_LIST)
+
+        ordered_list2 = "1.I am not a ordered_list block"
+        self.assertEqual(block_to_block_type(ordered_list2), BlockType.PARAGRAPH)
+
+    def test_paragraphs(self):
+        md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+def test_codeblock(self):
+    md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+        html,
+        "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+    )
+
 
 if __name__ == "__main__":
     unittest.main()

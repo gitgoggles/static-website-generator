@@ -1,6 +1,27 @@
+from blocktype import BlockType
 from extractor import *
 from textnode import *
 from htmlnode import *
+
+def block_to_block_type(block: str):
+    heading_pattern = re.compile(r"^#{1,6}\s.*")
+    multiline_code_pattern = re.compile(r"^```\n.*\n```$", re.DOTALL)
+    quote_pattern = re.compile(r"^>\s.*")
+    unordered_list_pattern = re.compile(r"^-\s.*")
+    ordered_list_pattern = re.compile(r"^\d\.\s.*")
+
+    if re.search(heading_pattern, block):
+        return BlockType.HEADING
+    if re.search(multiline_code_pattern, block):
+        return BlockType.CODE
+    if re.search(quote_pattern, block):
+        return BlockType.QUOTE
+    if re.search(unordered_list_pattern, block):
+        return BlockType.UNORDERED_LIST
+    if re.search(ordered_list_pattern, block):
+        return BlockType.ORDERED_LIST
+
+    return BlockType.PARAGRAPH
 
 def text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
@@ -18,7 +39,7 @@ def text_node_to_html_node(text_node: TextNode):
             return LeafNode("img", None, {"src": f"{text_node.url}"})
 
 
-def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType):
+def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     new_nodes = []
 
     for node in old_nodes:
@@ -40,7 +61,7 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
 
     return new_nodes
 
-def split_nodes_image(old_nodes):
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes = []
 
     for node in old_nodes:
@@ -70,7 +91,7 @@ def split_nodes_image(old_nodes):
     return new_nodes
 
 
-def split_nodes_link(old_nodes):
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     new_nodes = []
 
     for node in old_nodes:
@@ -100,7 +121,7 @@ def split_nodes_link(old_nodes):
     return new_nodes
 
 
-def text_to_text_nodes(text):
+def text_to_text_nodes(text: str):
     output_nodes = [TextNode(text, TextType.TEXT)]
     output_nodes = split_nodes_delimiter(output_nodes, "`", TextType.CODE)
     output_nodes = split_nodes_delimiter(output_nodes, "**", TextType.BOLD)
@@ -112,5 +133,39 @@ def text_to_text_nodes(text):
 
 def markdown_to_blocks(text: str):
     return list(map(str.strip, text.split('\n\n')))
+
+def markdown_to_html_node(markdown: str):
+    block_list = markdown_to_blocks(markdown)
+    root_children = []
+    for block in block_list:
+        if block == "":
+            continue
+
+        block_type = block_to_block_type(block)
+
+        match block_type:
+            case BlockType.PARAGRAPH:
+                stripped_lines = list(map(lambda x: x.strip(), block.split('\n')))
+                joined_lines = " ".join(stripped_lines)
+                text_nodes = text_to_text_nodes(joined_lines)
+                html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+                root_children.append(ParentNode("p", html_nodes))
+                continue
+            case BlockType.HEADING:
+                continue
+            case BlockType.CODE:
+                continue
+            case BlockType.QUOTE:
+                continue
+            case BlockType.UNORDERED_LIST:
+                continue
+            case BlockType.ORDERED_LIST:
+                continue
+
+
+    return ParentNode('div', root_children)
+
+
+
 
 
