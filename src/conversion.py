@@ -147,11 +147,20 @@ def markdown_to_html_node(markdown: str):
             case BlockType.PARAGRAPH:
                 stripped_lines = list(map(lambda x: x.strip(), block.split('\n')))
                 joined_lines = " ".join(stripped_lines)
+
                 text_nodes = text_to_text_nodes(joined_lines)
                 html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
                 root_children.append(ParentNode("p", html_nodes))
                 continue
             case BlockType.HEADING:
+                pattern = re.compile(r"^(#{1,6})\s.*")
+                match = re.search(pattern, block)
+                level = len(match.group(1))
+                heading_text = block[level + 1:]
+
+                text_nodes = text_to_text_nodes(heading_text)
+                html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+                root_children.append(ParentNode(f"h{level}", html_nodes))
                 continue
             case BlockType.CODE:
                 continue
