@@ -163,6 +163,10 @@ def markdown_to_html_node(markdown: str):
                 root_children.append(ParentNode(f"h{level}", html_nodes))
                 continue
             case BlockType.CODE:
+                lines = block.split('\n')
+                code_text = "\n".join(lines[1:-1]) + "\n"
+                code_node = ParentNode("code", [LeafNode(None, code_text)])
+                root_children.append(ParentNode("pre", [code_node]))
                 continue
             case BlockType.QUOTE:
                 continue
