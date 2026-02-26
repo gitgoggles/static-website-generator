@@ -224,10 +224,22 @@ the **same** even with inline stuff
 
         node = markdown_to_html_node(md)
         html = node.to_html()
-        print(html)
         self.assertEqual(
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_heading(self):
+        md = """
+> I am a quote
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        print(html)
+        self.assertEqual(
+            html,
+            "<div><blockquote>I am a quote</blockquote></div>",
         )
 
 

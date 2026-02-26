@@ -169,6 +169,13 @@ def markdown_to_html_node(markdown: str):
                 root_children.append(ParentNode("pre", [code_node]))
                 continue
             case BlockType.QUOTE:
+                quote_lines = []
+                for line in block.split('\n'):
+                    quote_lines.append(line[2:])
+                quote_text = " ".join(quote_lines)
+                text_nodes = text_to_text_nodes(quote_text)
+                html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+                root_children.append(ParentNode("blockquote", html_nodes))
                 continue
             case BlockType.UNORDERED_LIST:
                 continue
