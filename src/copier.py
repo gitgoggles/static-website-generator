@@ -25,5 +25,4 @@ def copy_src_to_dest(src, dest):
             print(f"COPY: {src_path} {dest_path}")
             shutil.copy(src_path, dest_path)
 
-# copy_src_to_dest("static", "public")
 
