@@ -229,17 +229,45 @@ the **same** even with inline stuff
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
 
-    def test_heading(self):
+    def test_quote(self):
         md = """
 > I am a quote
 """
 
         node = markdown_to_html_node(md)
         html = node.to_html()
-        print(html)
+
         self.assertEqual(
             html,
             "<div><blockquote>I am a quote</blockquote></div>",
+        )
+
+    def test_unordered_list(self):
+        md = """
+- I am a list item
+- I am a list item
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+
+        self.assertEqual(
+            html,
+            "<div><ul><li>I am a list item</li><li>I am a list item</li></ul></div>",
+        )
+
+    def test_ordered_list(self):
+        md = """
+1. I am a list item
+2. I am a list item
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+
+        self.assertEqual(
+            html,
+            "<div><ol><li>I am a list item</li><li>I am a list item</li></ol></div>",
         )
 
 

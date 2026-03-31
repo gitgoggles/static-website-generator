@@ -159,7 +159,7 @@ def markdown_to_html_node(markdown: str):
                 heading_text = block[level + 1:]
 
                 text_nodes = text_to_text_nodes(heading_text)
-                html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+                html_nodes = [text_node_to_html_node(node) for node in text_nodes]
                 root_children.append(ParentNode(f"h{level}", html_nodes))
                 continue
             case BlockType.CODE:
@@ -174,12 +174,26 @@ def markdown_to_html_node(markdown: str):
                     quote_lines.append(line[2:])
                 quote_text = " ".join(quote_lines)
                 text_nodes = text_to_text_nodes(quote_text)
-                html_nodes = list(map(lambda x: text_node_to_html_node(x), text_nodes))
+                html_nodes = [text_node_to_html_node(node) for node in text_nodes]
                 root_children.append(ParentNode("blockquote", html_nodes))
                 continue
             case BlockType.UNORDERED_LIST:
+                li_children = []
+                for line in block.split('\n'):
+                    _, text = line.split("- ", 1)
+                    text_nodes = text_to_text_nodes(text)
+                    html_nodes = [text_node_to_html_node(node) for node in text_nodes]
+                    li_children.append(ParentNode("li", html_nodes))
+                root_children.append(ParentNode("ul", li_children))
                 continue
             case BlockType.ORDERED_LIST:
+                li_children = []
+                for line in block.split('\n'):
+                    _, text = line.split(". ", 1)
+                    text_nodes = text_to_text_nodes(text)
+                    html_nodes = [text_node_to_html_node(node) for node in text_nodes]
+                    li_children.append(ParentNode("li", html_nodes))
+                root_children.append(ParentNode("ol", li_children))
                 continue
 
 

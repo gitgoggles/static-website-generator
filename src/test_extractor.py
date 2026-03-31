@@ -17,5 +17,15 @@ class TestTextNode(unittest.TestCase):
         matches = extract_markdown_links(text)
         self.assertEqual(matches, [("to boot dev","https://www.boot.dev"), ("to youtube","https://www.youtube.com/@bootdotdev")])
 
+    def test_extract_title_good(self):
+        text = "# i am title"
+        extracted = extract_title(text)
+        self.assertEqual(extracted, "i am title")
+
+    def test_extract_title_bad(self):
+        text = "## i am title"
+        with self.assertRaises(ValueError):
+            extract_title(text)
+
 if __name__ == "__main__":
     unittest.main()
